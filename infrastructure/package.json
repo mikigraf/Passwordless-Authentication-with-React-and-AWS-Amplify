@@ -8,7 +8,7 @@
       "postinstall": "cd ./lambda-triggers/create-auth-challenge && npm i && cd -",
       "package": "tsc && sam package --template-file template.yaml --output-template-file packaged.yaml --s3-bucket ${S3_BUCKET_NAME}",
       "deploy": "sam deploy --template-file packaged.yaml --capabilities CAPABILITY_IAM --stack-name ${STACK_NAME} --parameter-overrides SESFromAddress=${SES_FROM_ADDRESS} UserPoolName=${USER_POOL_NAME}",
-      "check-env": "if [ -e ${S3_BUCKET_NAME} ] || [ -e ${USER_POOL_NAME} ] || [ -e ${STACK_NAME} ] || [ -e ${SES_FROM_ADDRESS} ]; then exit 1; fi",
+      "check-env": "if [ -e ${S3_BUCKET_NAME} ] || [ -e ${USER_POOL_NAME} ] || [ -e ${STACK_NAME} ]  ]; then exit 1; fi",
       "bd": "npm run check-env && npm run package && npm run deploy",
       "publish": "npm run package && sam publish -t packaged.yaml --region us-east-1"
     },
