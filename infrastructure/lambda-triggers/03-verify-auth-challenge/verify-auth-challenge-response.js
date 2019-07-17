@@ -1,5 +1,5 @@
 
-import md5 from 'md5';
+const md5 = require('md5');
 
 module.exports.handler = async event => {
     const expectedAnswer = event.request.privateChallengeParameters.password; 

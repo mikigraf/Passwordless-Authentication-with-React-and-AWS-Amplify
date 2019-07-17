@@ -1,5 +1,5 @@
 
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 module.exports.handler = async event => {
     const connectionString = process.env.DB_CONNECTION_STRING

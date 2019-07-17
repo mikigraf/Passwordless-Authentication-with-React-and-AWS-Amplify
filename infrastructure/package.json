@@ -6,8 +6,8 @@
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
       "postinstall": "cd ./lambda-triggers/create-auth-challenge && npm i && cd -",
-      "package": "tsc && sam package --template-file template.yaml --output-template-file packaged.yaml --s3-bucket ${S3_BUCKET_NAME}",
-      "deploy": "sam deploy --template-file packaged.yaml --capabilities CAPABILITY_IAM --stack-name ${STACK_NAME} --parameter-overrides SESFromAddress=${SES_FROM_ADDRESS} UserPoolName=${USER_POOL_NAME}",
+      "package": "sam package --template-file template.yaml --output-template-file packaged.yaml --s3-bucket ${S3_BUCKET_NAME}",
+      "deploy": "sam deploy --template-file packaged.yaml --capabilities CAPABILITY_IAM --stack-name ${STACK_NAME} --parameter-overrides UserPoolName=${USER_POOL_NAME}",
       "check-env": "if [ -e ${S3_BUCKET_NAME} ] || [ -e ${USER_POOL_NAME} ] || [ -e ${STACK_NAME} ]  ]; then exit 1; fi",
       "bd": "npm run check-env && npm run package && npm run deploy",
       "publish": "npm run package && sam publish -t packaged.yaml --region us-east-1"
@@ -16,11 +16,7 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
-      "@types/aws-lambda": "^8.10.17",
-      "@types/node": "^10.12.18",
-      "aws-sdk": "^2.382.0",
-      "crypto-secure-random-digit": "^1.0.7",
-      "typescript": "^3.2.2"
+      "aws-sdk": "^2.382.0"
     },
     "devDependencies": {}
   }
