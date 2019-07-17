@@ -18,6 +18,7 @@ module.exports.handler = async event => {
         }
     });
 
+    mongoose.models = {}
     const userModel = mongoose.model('User', userSchema);
 
     let password;
