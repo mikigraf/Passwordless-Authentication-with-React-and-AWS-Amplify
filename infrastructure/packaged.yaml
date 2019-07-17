@@ -5,7 +5,7 @@ Description: 'Amazon Cognito User Pool with Passwordless E-Mail Auth configured
   '
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 30
 Parameters:
   UserPoolName:
     Type: String
@@ -19,13 +19,13 @@ Resources:
   DefineAuthChallenge:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://passwordless-authentication-with-existing-db/a196c7907b0255a9c18aa3e56c6432be
+      CodeUri: s3://passwordless-authentication-with-existing-db/732c26eda291079da25c17c59c18001e
       Handler: define-auth-challenge.handler
       Runtime: nodejs10.x
   CreateAuthChallenge:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://passwordless-authentication-with-existing-db/b8e743bec14a16c664b4782fe35a73df
+      CodeUri: s3://passwordless-authentication-with-existing-db/783d47aecd07d2c0342e438e747df953
       Handler: create-auth-challenge.handler
       Runtime: nodejs10.x
       Environment:
@@ -35,13 +35,13 @@ Resources:
   VerifyAuthChallengeResponse:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://passwordless-authentication-with-existing-db/1c781890ce1c4738fcd5afc1c57a84ff
+      CodeUri: s3://passwordless-authentication-with-existing-db/1ded2a0de7694c721804c0b2d26b45c1
       Handler: verify-auth-challenge-response.handler
       Runtime: nodejs10.x
   PreSignUp:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://passwordless-authentication-with-existing-db/ed2eade0e44f44f80c8e295bef7f73f7
+      CodeUri: s3://passwordless-authentication-with-existing-db/7c34852c5253b7889f53e5c52bd3fb14
       Handler: pre-sign-up.handler
       Runtime: nodejs10.x
   UserPool:

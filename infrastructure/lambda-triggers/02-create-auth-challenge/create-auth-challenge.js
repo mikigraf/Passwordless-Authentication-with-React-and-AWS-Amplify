@@ -1,13 +1,10 @@
-import { CognitoUserPoolTriggerHandler } from 'aws-lambda';
-import { randomDigits } from 'crypto-secure-random-digit';
-import mongoose from 'mongoose';
 
-export const handler = async event => {
+const mongoose = require('mongoose');
+
+module.exports.handler = async event => {
     const connectionString = process.env.DB_CONNECTION_STRING
 
-    mongoose.connect(connectionString, {
-        keepAlive: true
-    });
+    mongoose.connect(connectionString);
 
     const { Schema } = mongoose;
     const userSchema = new Schema({
@@ -21,13 +18,14 @@ export const handler = async event => {
         }
     });
 
+    mongoose.models = {}
     const userModel = mongoose.model('User', userSchema);
 
     let password;
 
     if(!event.request.session || !event.request.session.length) {
         // new session, so fetch password from the db
-        const username = event.request.userAttributes.username;
+        const username = event.request.userAttributes.email;
         const user = await userModel.findOne({ "username": username});
         password = user.password;
     } else {
@@ -40,7 +38,7 @@ export const handler = async event => {
     }
 
     // This is sent back to the client app
-    event.response.publicChallengeParameters = { username: event.request.userAttributes.username };
+    event.response.publicChallengeParameters = { username: event.request.userAttributes.email };
 
     // Add the secret login code to the private challenge parameters
     // so it can be verified by the "Verify Auth Challenge Response" trigger
@@ -50,6 +48,7 @@ export const handler = async event => {
     // in a next invocation of the "Create Auth Challenge" trigger
     event.response.challengeMetadata = `PASSWORD-${password}`;
 
+    mongoose.connection.close()
     return event;
 
 }

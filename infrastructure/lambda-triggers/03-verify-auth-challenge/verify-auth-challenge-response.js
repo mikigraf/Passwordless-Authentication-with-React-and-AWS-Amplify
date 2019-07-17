@@ -1,7 +1,7 @@
-import { CognitoUserPoolTriggerHandler } from 'aws-lambda';
-import md5 from 'md5';
 
-export const handler = async event => {
+const md5 = require('md5');
+
+module.exports.handler = async event => {
     const expectedAnswer = event.request.privateChallengeParameters.password; 
     if (md5(event.request.challengeAnswer) === expectedAnswer) {
         event.response.answerCorrect = true;
