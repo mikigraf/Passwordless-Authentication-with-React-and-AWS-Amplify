@@ -1,17 +1,46 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { BrowserRouter as Router, Route } from 'react';
 import { Auth } from 'aws-amplify';
-import { Form, Button, Input, Notification, Radio, Progress } from "element-react";
+import { Form, Button, Input } from "element-react";
+import PasswordInput from './components/passwordInput';
 
-
-function App() {
-  const state = {
-    email: ""
+class App extends React.Component {
+  state = {
+    email: "",
+    isLogged: false,
+    thisUser: null
   };
 
-  render(){
+  handleEmailInput = async event => {
+    event.preventDefault();
+    /*  const params = {
+      username: this.state.email,
+      password: 'Spejs$$$123',
+      attributes: {
+        name: 'Mikolaj Spejs'
+      }
+    };
+            // check if user exists in source database SOT 
+    try {
+      await Auth.signUp(params);
+    } catch(e) {
+      console.log(e);
+    */
+    try {
+      const thisUser = await Auth.signIn(this.state.email);
+      this.setState({
+        thisUser: thisUser
+      });
+    } catch(e) {
+      console.log(e);
+    }
+    this.setState({
+      isLogged: true
+    });
+  }
+
+  render() {
+    const { email, isLogged, thisUser } = this.state;
     return (
       <div className="App">
         { /* login */ }
@@ -23,11 +52,12 @@ function App() {
             <Form.Item>
               <Button type="primary" disabled={!email} onClick={this.handleEmailInput}>Sign In</Button>
             </Form.Item>
+           {isLogged && <PasswordInput email={thisUser}/>}
           </Form>
         </div>
       </div>
     );
-  }
+  };
 }
 
 export default App;
