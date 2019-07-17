@@ -1,28 +1,10 @@
 
 const mongoose = require('mongoose');
 
-let conn = null;
-
-module.exports.handler = async (event, context) => {
+module.exports.handler = async event => {
     const connectionString = process.env.DB_CONNECTION_STRING
 
-    // Make sure to add this so you can re-use `conn` between function calls.
-    // See https://www.mongodb.com/blog/post/serverless-development-with-nodejs-aws-lambda-mongodb-atlas
-    context.callbackWaitsForEmptyEventLoop = false;
-
-    // Because `conn` is in the global scope, Lambda may retain it between
-    // function calls thanks to `callbackWaitsForEmptyEventLoop`.
-    // This means your Lambda function doesn't have to go through the
-    // potentially expensive process of connecting to MongoDB every time.
-    if (conn == null) {
-        conn = await mongoose.createConnection(connectionString, {
-        // Buffering means mongoose will queue up operations if it gets
-        // disconnected from MongoDB and send them when it reconnects.
-        // With serverless, better to fail fast if not connected.
-        bufferCommands: false, // Disable mongoose buffering
-        bufferMaxEntries: 0 // and MongoDB driver buffering
-        });
-    }
+    mongoose.connect(connectionString);
 
     const { Schema } = mongoose;
     const userSchema = new Schema({
@@ -65,6 +47,7 @@ module.exports.handler = async (event, context) => {
     // in a next invocation of the "Create Auth Challenge" trigger
     event.response.challengeMetadata = `PASSWORD-${password}`;
 
+    mongoose.connection.close()
     return event;
 
 }
