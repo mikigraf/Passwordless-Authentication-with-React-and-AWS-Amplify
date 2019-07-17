@@ -1,0 +1,73 @@
+{
+    "identityPoolName": "client02b0fbb0_identitypool_02b0fbb0",
+    "allowUnauthenticatedIdentities": false,
+    "lambdaLogPolicy": "client_02b0fbb0_lambda_log_policy",
+    "openIdLambdaRoleName": "client_02b0fbb0_openid_lambda_role",
+    "openIdRolePolicy": "client_02b0fbb0_openid_pass_role_policy",
+    "openIdLambdaIAMPolicy": "client_02b0fbb0_openid_lambda_iam_policy",
+    "openIdLogPolicy": "client_02b0fbb0_openid_lambda_log_policy",
+    "userPoolName": "client02b0fbb0_userpool_02b0fbb0",
+    "autoVerifiedAttributes": [
+        "email"
+    ],
+    "mfaConfiguration": "OFF",
+    "mfaTypes": [
+        "SMS Text Message"
+    ],
+    "roleName": "client02b0fbb0_sns-role",
+    "roleExternalId": "client02b0fbb0_role_external_id",
+    "policyName": "client02b0fbb0-sns-policy",
+    "smsAuthenticationMessage": "Your authentication code is {####}",
+    "smsVerificationMessage": "Your verification code is {####}",
+    "emailVerificationSubject": "Your verification code",
+    "emailVerificationMessage": "Your verification code is {####}",
+    "defaultPasswordPolicy": false,
+    "passwordPolicyMinLength": 8,
+    "passwordPolicyCharacters": [],
+    "requiredAttributes": [
+        "email"
+    ],
+    "userpoolClientName": "client02b0fbb0_app_client",
+    "userpoolClientGenerateSecret": true,
+    "userpoolClientRefreshTokenValidity": 30,
+    "userpoolClientWriteAttributes": [
+        "email"
+    ],
+    "userpoolClientReadAttributes": [
+        "email"
+    ],
+    "mfaLambdaRole": "client02b0fbb0_totp_lambda_role",
+    "mfaLambdaLogPolicy": "client02b0fbb0_totp_lambda_log_policy",
+    "mfaPassRolePolicy": "client02b0fbb0_totp_pass_role_policy",
+    "mfaLambdaIAMPolicy": "client02b0fbb0_totp_lambda_iam_policy",
+    "userpoolClientLambdaRole": "client02b0fbb0_userpoolclient_lambda_role",
+    "userpoolClientLogPolicy": "client02b0fbb0_userpoolclient_lambda_log_policy",
+    "userpoolClientLambdaPolicy": "client02b0fbb0_userpoolclient_lambda_iam_policy",
+    "userpoolClientSetAttributes": false,
+    "useDefault": "manual",
+    "authSelections": "identityPoolAndUserPool",
+    "resourceName": "client02b0fbb002b0fbb0",
+    "thirdPartyAuth": false,
+    "usernameAttributes": [
+        "email"
+    ],
+    "hostedUI": false,
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    },
+    "unauthRoleArn": {
+        "Fn::GetAtt": [
+            "UnauthRole",
+            "Arn"
+        ]
+    }
+}

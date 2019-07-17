@@ -1,0 +1,133 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Amazon Cognito User Pool with Passwordless E-Mail Auth configured
+
+Globals:
+  Function:
+    Timeout: 3
+
+Parameters:
+  UserPoolName:
+    Type: String
+    Description: The name you want the User Pool to be created with
+    Default: 'UsingExistingDatabaseWithAWSCognito'
+  DbConnectionString:
+    Type: String
+    Description: The e-mail address to send the secret login code from
+    Default: "mongodb://admin:admin1@ds351827.mlab.com:51827/existing-users-db"
+
+Resources:
+# Defines Authentication Challenge
+# Checks if user is already authenticated etc.
+# And decides on the next step
+  DefineAuthChallenge:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda-triggers/01-define-auth-challenge/
+      Handler: define-auth-challenge.handler
+      Runtime: nodejs10.x
+
+# Fetches password from existing user database
+# And adds it to the event object,
+# So that the next lambda can verify the response
+  CreateAuthChallenge:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda-triggers/02-create-auth-challenge/
+      Handler: create-auth-challenge.handler
+      Runtime: nodejs10.x
+      Environment:
+        Variables:
+          DB_CONNECTION_STRING: !Ref DbConnectionString
+
+# Compares provided answer with password provided
+# By CreateAuthChallenge lambda in the previous call
+  VerifyAuthChallengeResponse:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda-triggers/03-verify-auth-challenge/
+      Handler: verify-auth-challenge-response.handler
+      Runtime: nodejs10.x
+
+  PreSignUp:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda-triggers/00-pre-sign-up/
+      Handler: pre-sign-up.handler
+      Runtime: nodejs10.x
+
+  UserPool:
+    Type: "AWS::Cognito::UserPool"
+    Properties:
+      UserPoolName: !Ref UserPoolName
+      Schema:
+        - Name: name
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: email
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: false
+      UsernameAttributes:
+        - email
+      MfaConfiguration: "OFF"
+      LambdaConfig:
+        CreateAuthChallenge: !GetAtt CreateAuthChallenge.Arn
+        DefineAuthChallenge: !GetAtt DefineAuthChallenge.Arn
+        PreSignUp: !GetAtt PreSignUp.Arn
+        VerifyAuthChallengeResponse: !GetAtt VerifyAuthChallengeResponse.Arn
+
+  DefineAuthChallengeInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt DefineAuthChallenge.Arn
+      Principal: cognito-idp.amazonaws.com
+      SourceArn: !GetAtt UserPool.Arn
+  CreateAuthChallengeInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt CreateAuthChallenge.Arn
+      Principal: cognito-idp.amazonaws.com
+      SourceArn: !GetAtt UserPool.Arn
+  VerifyAuthChallengeResponseInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt VerifyAuthChallengeResponse.Arn
+      Principal: cognito-idp.amazonaws.com
+      SourceArn: !GetAtt UserPool.Arn
+  PreSignUpInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt PreSignUp.Arn
+      Principal: cognito-idp.amazonaws.com
+      SourceArn: !GetAtt UserPool.Arn
+
+  UserPoolClient:
+    Type: "AWS::Cognito::UserPoolClient"
+    Properties:
+      ClientName: auth-with-existing-db
+      GenerateSecret: false
+      UserPoolId: !Ref UserPool
+      ExplicitAuthFlows:
+        - CUSTOM_AUTH_FLOW_ONLY
+
+Outputs:
+  UserPoolId:
+    Description: ID of the User Pool
+    Value: !Ref UserPool
+  UserPoolClientId:
+    Description: ID of the User Pool Client
+    Value: !Ref UserPoolClient
