@@ -29,14 +29,13 @@ class App extends React.Component {
     try {
       const thisUser = await Auth.signIn(this.state.email);
       this.setState({
-        thisUser: thisUser
+        thisUser: thisUser,
+        isLogged: true
       });
     } catch(e) {
       console.log(e);
+      setTimeout( () => window.location.reload(), 2000)
     }
-    this.setState({
-      isLogged: true
-    });
   }
 
   render() {

@@ -4,8 +4,10 @@ const mongoose = require('mongoose');
 module.exports.handler = async event => {
     const connectionString = process.env.DB_CONNECTION_STRING
 
-    mongoose.connect(connectionString);
-
+    if(mongoose.connection.readyState !== 1){
+        mongoose.connect(connectionString);
+    }
+    
     const { Schema } = mongoose;
     const userSchema = new Schema({
         username: {
