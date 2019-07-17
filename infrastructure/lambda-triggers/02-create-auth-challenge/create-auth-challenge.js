@@ -1,8 +1,7 @@
-import { CognitoUserPoolTriggerHandler } from 'aws-lambda';
-import { randomDigits } from 'crypto-secure-random-digit';
+
 import mongoose from 'mongoose';
 
-export const handler = async event => {
+module.exports.handler = async event => {
     const connectionString = process.env.DB_CONNECTION_STRING
 
     mongoose.connect(connectionString, {
