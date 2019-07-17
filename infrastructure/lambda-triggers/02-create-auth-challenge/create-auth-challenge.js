@@ -4,9 +4,7 @@ const mongoose = require('mongoose');
 module.exports.handler = async event => {
     const connectionString = process.env.DB_CONNECTION_STRING
 
-    mongoose.connect(connectionString, {
-        keepAlive: true
-    });
+    mongoose.connect(connectionString);
 
     const { Schema } = mongoose;
     const userSchema = new Schema({
@@ -26,7 +24,7 @@ module.exports.handler = async event => {
 
     if(!event.request.session || !event.request.session.length) {
         // new session, so fetch password from the db
-        const username = event.request.userAttributes.username;
+        const username = event.request.userAttributes.email;
         const user = await userModel.findOne({ "username": username});
         password = user.password;
     } else {
