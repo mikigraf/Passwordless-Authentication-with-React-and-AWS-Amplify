@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 module.exports.handler = async event => {
     const connectionString = process.env.DB_CONNECTION_STRING
 
-    await mongoose.createConnection(connectionString, {
-        reconnectInterval: 5000,
-        reconnectTries: 60
-      });
-    
+    try {
+        mongoose.connect(connectionString);
+    } catch(err) {
+       
+    }
     const { Schema } = mongoose;
     const userSchema = new Schema({
         username: {
